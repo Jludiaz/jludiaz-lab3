@@ -52,7 +52,7 @@ public class WordCounter {
         return wordCount;
     }
 
-    public StringBuffer processFile(String path){
+    public static StringBuffer processFile(String path){
         //convert contents of file to StringBuffer
         boolean isEmpty = true;
         StringBuffer fileContents = new StringBuffer();
@@ -89,6 +89,26 @@ public class WordCounter {
     public static void main (String[] args){
         //asks the user to choose to process a file with option 1
         // or text with option 2
+        System.out.println("Please enter 1 if you like to read from a file and 2 if you like to read a text");
+        Scanner obj = new Scanner(System.in);
+        String option = obj.nextLine();
+
+        if (option.equals("1")){
+            System.out.println("Enter filename path: ");
+            String path = obj.nextLine();
+            processFile(path);
+        }else if (option.equals("2")){
+            System.out.println("Enter stopword: ");
+            StringBuffer stopword = obj.nextLine();
+
+            System.out.println("Enter text: ");
+            String text = obj.nextLine();
+
+            processText(stopword, text); // Assuming processText is implemented elsewhere
+        }else{
+            System.out.println("Invalid. Please enter either 1 or 2.");
+        }
+
         //If the user enters an invalid option, allow them to choose again until they have a correct option
         //Both of these items will be abailable as first command line argument
         //it process the text, and outputs the number of words it counted
