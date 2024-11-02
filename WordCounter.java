@@ -5,7 +5,7 @@ import java.util.regex.Matcher;
 
 public class WordCounter {
         
-    public static int processText(StringBuffer text, String stopword){
+    public static int processText(StringBuffer text, String stopword) throws InvalidStopwordException,  TooSmallText{
         //Count the number of words in text through the stopword
         int wordCount = 0;
 
@@ -23,7 +23,7 @@ public class WordCounter {
             String word = matcher.group();
 
             //IF STOPWORD ENCOUNTERED
-            if (stopword == word){
+            if (stopword.equals(word)){
                 stopwordInText = true;
                 break;
             }
@@ -31,28 +31,20 @@ public class WordCounter {
         }
 
         //IF STOPWORD IS NOT IN TEXT
-        try {
-            if(stopwordInText == false){
-                throw new InvalidStopwordException();
-            }
-        } catch (InvalidStopwordException e) {
-            System.out.println("EXCEPTION: stopword is not in text");
+        if(stopwordInText == false){
+            throw new InvalidStopwordException();
+        }
+        //if wordCount is lower than five
+        if (wordCount < 5){
+            throw new TooSmallText();
         }
 
-        // IF WORDCOUNT < FIVE, raise TooSmallText exception
-        try {
-            if (wordCount < 5){
-                throw new TooSmallText();
-            }
-        } catch (TooSmallText e) {
-            System.out.println("EXCEPTION: The text must be longer than 5 words");
-        }     
 
         // return word count, unless the count is less than five
         return wordCount;
     }
 
-    public static StringBuffer processFile(String path){
+    public static StringBuffer processFile(String path) throws EmptyFileException{
         //convert contents of file to StringBuffer
         boolean isEmpty = true;
         StringBuffer fileContents = new StringBuffer();
@@ -89,26 +81,77 @@ public class WordCounter {
     public static void main (String[] args){
         //asks the user to choose to process a file with option 1
         // or text with option 2
-        System.out.println("Please enter 1 if you like to read from a file and 2 if you like to read a text");
-        Scanner obj = new Scanner(System.in);
-        String option = obj.nextLine();
+        Scanner scanner = new Scanner(System.in);
+        int option = 0;
 
-        if (option.equals("1")){
-            System.out.println("Enter filename path: ");
-            String path = obj.nextLine();
-            processFile(path);
-        }else if (option.equals("2")){
-            System.out.println("Enter stopword: ");
-            StringBuffer stopword = obj.nextLine();
 
-            System.out.println("Enter text: ");
-            String text = obj.nextLine();
+        //Choose option from 1 or 2
+        while (option != 1 && option != 2) {
 
-            processText(stopword, text); // Assuming processText is implemented elsewhere
-        }else{
-            System.out.println("Invalid. Please enter either 1 or 2.");
+            System.out.println("Please enter 1 if you'd like to read from a file, or 2 if you'd like to read a text:");
+
+            if (scanner.hasNextInt()) {
+                option = scanner.nextInt();
+                scanner.nextLine(); // consume newline
+            } else {
+                System.out.println("Invalid input. Please enter a valid option (1 or 2).");
+                scanner.nextLine(); // consume invalid input
+            }
         }
+        
+        //OPTION 1
+        if (option == 1){
+            String path = null;
 
+            //ASK USER TO ENTER FILENAME
+            while (true) {
+                System.out.println("Enter the filename path:");
+                
+                try {
+                    path = scanner.nextLine();
+                    break;
+                } catch (Exception e) {
+                    System.out.println("Error, invalid input");
+                    scanner.next();
+                }
+            }
+    
+            StringBuffer text = null;
+
+            //EMPTY FILE EXCEPTION
+            try {
+                text = processFile(path);
+            } catch (EmptyFileException e) {
+                System.out.println("Empty file exception");
+                text = new StringBuffer("");
+            }
+
+            //ASK FOR STOPWORD IN FILE
+
+
+
+        }else if (option == 2){
+            //Enter Text
+            System.out.println("Enter text: ");
+
+            String text = scanner.nextLine();
+            StringBuffer textStringBuffer = new StringBuffer(text);//CONVERT to STOPWORD
+
+            System.out.println("Enter stopword: "); //ASK USER TO ENTER STOPWORD
+            String stopword = scanner.nextLine(); //READ THE OBJ
+
+            while(true){
+                try {
+                    System.out.println(processText(textStringBuffer, stopword));
+                    break;
+                } catch (InvalidStopwordException e) {
+                    System.out.println("Stopword not found. Please enter a new stopword:");
+                    stopword = scanner.nextLine();
+                } catch (TooSmallText e) {
+                    e.printStackTrace();
+                }
+            }
+        }
         //If the user enters an invalid option, allow them to choose again until they have a correct option
         //Both of these items will be abailable as first command line argument
         //it process the text, and outputs the number of words it counted
