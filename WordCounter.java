@@ -42,7 +42,7 @@ public class WordCounter {
             }
 
             //IF STOPWORD IN TEXT and WORD COUNT < 5 and 
-            if((stopwordInText) && (wordCount > 5)){
+            if((stopwordInText) && (wordCount >= 5)){
                 break;
             }
         }
@@ -54,7 +54,7 @@ public class WordCounter {
 
         //IF STOPWORD IS NOT IN TEXT
         if(stopwordInText == false){
-            System.out.println("Hello World");
+            //System.out.println("Hello World");
             throw new InvalidStopwordException("Couldn't find stopword: " + stopword);
         }
 
@@ -62,38 +62,30 @@ public class WordCounter {
         return wordCount;
     }
 
-    public static StringBuffer processFile(String path) throws EmptyFileException{
-        //convert contents of file to StringBuffer
-        boolean isEmpty = true;
+    public static StringBuffer processFile(String path) throws EmptyFileException {
         StringBuffer fileContents = new StringBuffer();
+        boolean isEmpty = true;
 
-        while(isEmpty == true){
-        
-            try (BufferedReader reader = new BufferedReader(new FileReader (path))){
-                String line = new String();
-                while((line = reader.readLine()) != null){
-                    fileContents.append(line).append("\n");
-                    isEmpty = false;
-                    //System.out.println(fileContents.toString());
-                }
-                
-                //if the file is empty raise an EmptyFileException that contains the file's path in its message
-                if(isEmpty == true){
-                    throw new EmptyFileException("failed to catch EmptyFileException");
-                }
-
-            //if file cannot be opened, prompt the user to re-enter filename until 
-            //they enter a file that can be opened
-            }catch(Exception e){
-                // File could not be opened; prompt the user to re-enter filename
-                System.out.println("Please enter a new filename: ");
-                Scanner scanner = new Scanner(System.in);
-                path = scanner.nextLine(); // Update path with new filename entered by user
+        try (BufferedReader reader = new BufferedReader(new FileReader(path))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                fileContents.append(line).append("\n");
+                isEmpty = false; // Set to false once any content is read
             }
-
-            if (isEmpty == false){
-                break;
+            
+            // If no content was read, throw EmptyFileException
+            if (isEmpty) {
+                throw new EmptyFileException(path + " was empty");
             }
+            
+        } catch (EmptyFileException e) {
+            throw e; // Rethrow the exception to signal the file is empty
+        } catch (Exception e) {
+            // File could not be opened; prompt the user to re-enter filename
+            System.out.println("Please enter a new filename: ");
+            Scanner scanner = new Scanner(System.in);
+            path = scanner.nextLine(); // Update path with new filename entered by user
+            return processFile(path); // Retry with the new path
         }
 
         return fileContents;
@@ -143,7 +135,7 @@ public class WordCounter {
             try {
                 text = processFile(path);
             } catch (EmptyFileException e) {
-                System.out.println("Empty file exception");
+                e.printStackTrace();
                 text = new StringBuffer("");
             }
 
@@ -157,11 +149,13 @@ public class WordCounter {
                     System.out.println(processText(text, stopword));
                     break;
                 } catch (InvalidStopwordException e) {
+                    e.printStackTrace();
                     System.out.println("Stopword not found. Please enter a new stopword:");
                     stopword = scanner.nextLine();
                     UserStopWordCount++;
                 } catch (TooSmallText e) {
                     e.printStackTrace();
+                    break;
                 }
             }
 
