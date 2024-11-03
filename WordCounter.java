@@ -92,11 +92,44 @@ public class WordCounter {
     }
 
     public static void main (String[] args){
+
+        /*
+         * Check if no arguments are provided, if so then
+                a. Use STDIN
+            If one argument is provided, and it starts (and end) with double quotes then
+                a. Use the sentence provided (without the quotes)
+            If args not in quotes:
+                a. try opening the file
+                b. check if stopword given
+                c. process the file
+         */
         //asks the user to choose to process a file with option 1
         // or text with option 2
-        Scanner scanner = new Scanner(System.in);
-        int option = 0;
+        //input: 
+        //1. java WordCounter valid.txt green
+        //2. java WordCounter valid.txt 
 
+        //IF NO ARGUMENTS ARE PROVIDED
+        if (args.length == 0){
+            noArgumentsProvided();
+        }
+
+        //IF DOUBLE QUOTES IS SPECIFIED
+        if (args.length == 1 && args[0].startsWith("\"") && args[0].endsWith("\"")){
+            doubleQuotes(args);
+        }
+
+        //IF ARGUMENTS ARE PROVIDED
+        if (args.length > 0 && args[0] != null){
+            ArgumentsProvided(args);
+        }
+
+    }
+    
+    public static void noArgumentsProvided(){
+
+        int option = 0;
+        Scanner scanner = new Scanner(System.in);
 
         //Choose option from 1 or 2
         while (option != 1 && option != 2) {
@@ -189,14 +222,69 @@ public class WordCounter {
                 }
             }
         }
-        //If the user enters an invalid option, allow them to choose again until they have a correct option
-        //Both of these items will be abailable as first command line argument
-        //it process the text, and outputs the number of words it counted
-        // if file is empty, method will display the message of the exception raised (which includes path of file)
-        //NOTE: The path of the empty file may not be the same path that was specified in the command line 
-        // if the stopword is not in text, allow the user ONE chance to re-specify the stopword and process text again
-        // If they enter another stopword that cant be found, report to user
 
         scanner.close();
     }
+
+    public static void ArgumentsProvided(String[] Args){
+
+        Scanner scanner = new Scanner(System.in);
+        //NOW TO CONVERT TO STRINGBUFFER AND ASK FOR STOPWORD
+        StringBuffer path = new StringBuffer(Args[0]);
+        String stringPath = path.toString();
+
+        //OPEN FILE WITH EMPTY FILE EXCEPTION CATCH
+        try {
+            path = processFile(stringPath);
+        } catch (EmptyFileException e) {
+            e.printStackTrace();
+            path = new StringBuffer("");
+        }
+
+        //CHECK IF STOPWORD ARGUMENT IS NOT NULL
+        String stopword = null;
+        if (Args.length == 2) {
+            stopword = Args[1];  // Second argument, optional
+        }
+
+        int UserStopWordCount = 0;
+        while(UserStopWordCount <= 1){
+            try {
+                System.out.println("Found " + processText(path, stopword) + " words.");
+                break;
+            } catch (InvalidStopwordException e) {
+                e.printStackTrace();
+                System.out.println("Stopword not found. Please enter a new stopword:");
+                stopword = scanner.nextLine();
+                UserStopWordCount++;
+            } catch (TooSmallText e) {
+                e.printStackTrace();
+                break;
+            }
+        }
+
+        scanner.close();
+    }
+
+    public static void doubleQuotes(String[] Args){
+        String text = Args[0].substring(1, Args[0].length() - 1);
+        StringBuffer textBuffer = new StringBuffer(text);
+        
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter stopword: ");
+        String stopword = scanner.nextLine();
+        
+        try {
+            int wordCount = processText(textBuffer, stopword);
+            System.out.println(wordCount);
+        } catch (InvalidStopwordException e) {
+            System.out.println("Stopword not found. " + e.getMessage());
+        } catch (TooSmallText e) {
+            System.out.println("TooSmallText. " + e.getMessage());
+        }
+        
+        scanner.close();
+        return;
+    }
+
 }
