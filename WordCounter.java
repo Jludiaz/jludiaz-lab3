@@ -17,28 +17,46 @@ public class WordCounter {
         //indicated if the current stopword is in the text
         boolean stopwordInText = false;
 
+        //IF STOPWORD IS NULL
+        if (stopword == null){
+            while(matcher.find()){
+                wordCount++;
+            }
+
+            if (wordCount < 5){
+                throw new TooSmallText("Only found " + wordCount + " words.");
+            }
+            return wordCount;
+        }
+
         //while loop to find patterns
         while(matcher.find()){
             //define the word 
             String word = matcher.group();
+            wordCount++;//increment wordCount each time word is found
+            System.out.println(word + " " + wordCount);
 
-            //IF STOPWORD ENCOUNTERED
+            //IF STOPWORD ENCOUNTERED 
             if (stopword.equals(word)){
                 stopwordInText = true;
+            }
+
+            //IF STOPWORD IN TEXT and WORD COUNT < 5 and 
+            if((stopwordInText) && (wordCount > 5)){
                 break;
             }
-            wordCount++;//increment wordCount each time word is found
+        }
+
+        //IF TOO SMALL TEXT
+        if (wordCount < 5){
+            throw new TooSmallText("Only found " + wordCount + " words.");
         }
 
         //IF STOPWORD IS NOT IN TEXT
         if(stopwordInText == false){
-            throw new InvalidStopwordException();
+            System.out.println("Hello World");
+            throw new InvalidStopwordException("Couldn't find stopword: " + stopword);
         }
-        //if wordCount is lower than five
-        if (wordCount < 5){
-            throw new TooSmallText();
-        }
-
 
         // return word count, unless the count is less than five
         return wordCount;
@@ -51,15 +69,17 @@ public class WordCounter {
 
         while(isEmpty == true){
         
-            try (BufferedReader fr = new BufferedReader(new FileReader (path))){
+            try (BufferedReader reader = new BufferedReader(new FileReader (path))){
                 String line = new String();
-                while((line = fr.readLine()) != null){
-                    fileContents.append(fr).append("\n");
+                while((line = reader.readLine()) != null){
+                    fileContents.append(line).append("\n");
                     isEmpty = false;
+                    //System.out.println(fileContents.toString());
                 }
+                
                 //if the file is empty raise an EmptyFileException that contains the file's path in its message
                 if(isEmpty == true){
-                    throw new EmptyFileException("The file " + path + " is empty");
+                    throw new EmptyFileException("failed to catch EmptyFileException");
                 }
 
             //if file cannot be opened, prompt the user to re-enter filename until 
@@ -71,9 +91,10 @@ public class WordCounter {
                 path = scanner.nextLine(); // Update path with new filename entered by user
             }
 
-            break;
+            if (isEmpty == false){
+                break;
+            }
         }
-
 
         return fileContents;
     }
@@ -106,7 +127,6 @@ public class WordCounter {
             //ASK USER TO ENTER FILENAME
             while (true) {
                 System.out.println("Enter the filename path:");
-                
                 try {
                     path = scanner.nextLine();
                     break;
@@ -116,6 +136,7 @@ public class WordCounter {
                 }
             }
     
+            //NOW TO CONVERT TO STRINGBUFFER AND ASK FOR STOPWORD
             StringBuffer text = null;
 
             //EMPTY FILE EXCEPTION
@@ -127,7 +148,24 @@ public class WordCounter {
             }
 
             //ASK FOR STOPWORD IN FILE
+            System.out.println("Enter stopword: "); //ASK USER TO ENTER STOPWORD
+            String stopword = scanner.nextLine(); //READ THE OBJ
 
+            int UserStopWordCount = 0;
+            while(UserStopWordCount <= 1){
+                try {
+                    System.out.println(processText(text, stopword));
+                    break;
+                } catch (InvalidStopwordException e) {
+                    System.out.println("Stopword not found. Please enter a new stopword:");
+                    stopword = scanner.nextLine();
+                    UserStopWordCount++;
+                } catch (TooSmallText e) {
+                    e.printStackTrace();
+                }
+            }
+
+            System.out.println(stopword);
 
 
         }else if (option == 2){
@@ -135,20 +173,25 @@ public class WordCounter {
             System.out.println("Enter text: ");
 
             String text = scanner.nextLine();
-            StringBuffer textStringBuffer = new StringBuffer(text);//CONVERT to STOPWORD
+            StringBuffer textStringBuffer = new StringBuffer(text);//CONVERT to text
 
             System.out.println("Enter stopword: "); //ASK USER TO ENTER STOPWORD
             String stopword = scanner.nextLine(); //READ THE OBJ
 
-            while(true){
+            int stopwordCount = 0;
+            int processCount = 0;
+            while(stopwordCount <= 1){
                 try {
-                    System.out.println(processText(textStringBuffer, stopword));
+                    processCount = processText(textStringBuffer, stopword);
+                    System.out.println(processCount);
                     break;
                 } catch (InvalidStopwordException e) {
                     System.out.println("Stopword not found. Please enter a new stopword:");
                     stopword = scanner.nextLine();
+                    stopwordCount++;
                 } catch (TooSmallText e) {
                     e.printStackTrace();
+                    break;
                 }
             }
         }
@@ -159,5 +202,7 @@ public class WordCounter {
         //NOTE: The path of the empty file may not be the same path that was specified in the command line 
         // if the stopword is not in text, allow the user ONE chance to re-specify the stopword and process text again
         // If they enter another stopword that cant be found, report to user
+
+        scanner.close();
     }
 }
