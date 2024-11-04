@@ -1,0 +1,72 @@
+commit c4f2a7c4bee15bd755def46a2e2ddc40b1de1670
+Author: Jeremy <jeremyludiaz@gmail.com>
+Date:   Sun Nov 3 19:50:53 2024 -0500
+
+    FINISHED MY TEST CASES:
+    FIGURED OUT WHAT I HAD WRONG
+    1. I WAS PRINTING THE WRONG STRING WHENVER I THREW MY TOOSMALLTEXT EXCEPTION. (I NEEDED TO PRINT E)
+    2. I HAD .append(\n) in the process file and it was not letting me past test cases 13 and 14.
+
+commit b7f4455beec83e228e30dfbea42c6729940603b7
+Author: Jeremy <jeremyludiaz@gmail.com>
+Date:   Sun Nov 3 18:58:04 2024 -0500
+
+    Great Progress:
+    I moved everything in different functions to take account the different input streams in the command line.
+    I passed the test cases that were failling because I was asking for a stopword despite the user choosing not to input any.
+    I still have 4 failures but I understand what I have to do. Break time. Im gonna have some coffee and look at it again later
+
+commit 5bfb2491af6445d39af31a640c00346b59e07fe2
+Author: Jeremy <jeremyludiaz@gmail.com>
+Date:   Sun Nov 3 16:21:45 2024 -0500
+
+    Unit Test File
+
+commit 799b25b91438a1eff5280181b3e2117c90fcfcd0
+Author: Jeremy <jeremyludiaz@gmail.com>
+Date:   Sun Nov 3 16:16:01 2024 -0500
+
+    I do not understand the missing test cases.
+
+commit 83dcb987b2df212a673442ec6191320a8ff6431b
+Author: Jeremy <jeremyludiaz@gmail.com>
+Date:   Sun Nov 3 12:26:49 2024 -0500
+
+    Good progress but now trying to pass the test cases. I cannot get my test case to throw a TooSmallText exception when stopWord is found but the textis less than five.
+
+commit 586bb378727e46cfbda91666aad9c63a1d3ed0aa
+Author: Jeremy <jeremyludiaz@gmail.com>
+Date:   Sat Nov 2 15:46:18 2024 -0400
+
+    Testing my WordCounter without processing file, only text. Very big improvements this commit. My current main method works and it asks the user for another stopword. The processText method now displays the word count. I simplified all of my catch blocks
+
+commit 279ff5c28715715ef3ee56f023cb6e188729ee03
+Author: Jeremy <jeremyludiaz@gmail.com>
+Date:   Fri Nov 1 18:29:17 2024 -0400
+
+    Defining my main method. Made a scanner object that asks for options 1 or 2. Then if statements to call the indicated methods with the indicated options
+
+commit a50a30399a99fb6e9166b49b92e08ea7b9ecb0f7
+Author: Jeremy <jeremyludiaz@gmail.com>
+Date:   Fri Nov 1 17:37:58 2024 -0400
+
+    Did a lot today, here are the updates:
+    First, I read out all of descriptions and started writing under each one. Even if the formatting wasn't right, I wrote all of the exception handling under each one. I also updated each expection file to send the message to the parent class Exception by calling the super method.
+    Then, I read on wordPattern and how to identify certain expressions. Implemented wordPattern() and matcher() into processText to read the text. After, I implemented a while loop until I find all of the patterns in the text. In this loop, I incremented wordCount for each pattern recognition and a base case if statement to break out the loop. It equals stopwordInText = true to later on check for exception.
+    Then, I placed stopword exception to throw a new invalidStowordExcexptio to deal when stopword is not in the text. This is determiend by the previouly declared boolean.
+    The last Exception in processText is catching if the wordCount is less than five and throwing an exception if true. Return wordCount at the end to end program.
+    Finally, the last part of my program I worked on, processFile()
+    I initially tackled this problem without a while loop and a simple try to read and throw an exception for the user to re-enter file path. By far took me the longest to research and figure it out, because it is my first time using scanner objects in java. Once figured it out, I implemented the scanner object in catch so the user is able to re-enter the file. Now, I have an empty try block and a catch block with the scanner object.
+    Now it was time to convert the file into a StringBugger and read. I used BufferedReader and FileReader, then a while loop to append all the contents from my file to my StringBuffer. After reading the contents from my file, I declared a flag/boolean to check if I ever entered the loop. If the file never entered the loop, whch meant that the path was empty, that meant that the flag stayed false and I implemented an exception when isEmpty = false. These are all of my updates from 1:00 pm
+
+commit 95823e17257860648dd95afd96212432edcf4ad3
+Author: Jeremy <jeremyludiaz@gmail.com>
+Date:   Mon Oct 28 15:21:15 2024 -0400
+
+    Defined method functionality using comments
+
+commit e16fde02621220cbe6b3b1ce273311cedfd49c58
+Author: Jeremy <jeremyludiaz@gmail.com>
+Date:   Mon Oct 21 14:37:03 2024 -0400
+
+    Lab Commit
