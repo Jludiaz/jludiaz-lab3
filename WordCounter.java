@@ -21,10 +21,11 @@ public class WordCounter {
         if (stopword == null){
             while(matcher.find()){
                 wordCount++;
+                System.out.println(matcher.group() + " " + wordCount);
             }
 
             if (wordCount < 5){
-                throw new TooSmallText("Only found " + wordCount + " words.");
+                throw new TooSmallText("TooSmallText: Only found " + wordCount + " words.");
             }
             return wordCount;
         }
@@ -34,7 +35,6 @@ public class WordCounter {
             //define the word 
             String word = matcher.group();
             wordCount++;//increment wordCount each time word is found
-            System.out.println(word + " " + wordCount);
 
             //IF STOPWORD ENCOUNTERED 
             if (stopword.equals(word)){
@@ -69,7 +69,7 @@ public class WordCounter {
         try (BufferedReader reader = new BufferedReader(new FileReader(path))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                fileContents.append(line).append("\n");
+                fileContents.append(line);
                 isEmpty = false; // Set to false once any content is read
             }
             
@@ -81,7 +81,6 @@ public class WordCounter {
         } catch (EmptyFileException e) {
             throw e; // Rethrow the exception to signal the file is empty
         } catch (Exception e) {
-            // File could not be opened; prompt the user to re-enter filename
             System.out.println("Please enter a new filename: ");
             Scanner scanner = new Scanner(System.in);
             path = scanner.nextLine(); // Update path with new filename entered by user
@@ -248,9 +247,11 @@ public class WordCounter {
         }
 
         int UserStopWordCount = 0;
+        int processTextWordCount= 0;
         while(UserStopWordCount <= 1){
             try {
-                System.out.println("Found " + processText(path, stopword) + " words.");
+                processTextWordCount = processText(path, stopword);
+                System.out.println("Found " + processTextWordCount + " words.");
                 break;
             } catch (InvalidStopwordException e) {
                 e.printStackTrace();
@@ -258,7 +259,7 @@ public class WordCounter {
                 stopword = scanner.nextLine();
                 UserStopWordCount++;
             } catch (TooSmallText e) {
-                e.printStackTrace();
+                System.out.println(e.getMessage());
                 break;
             }
         }
